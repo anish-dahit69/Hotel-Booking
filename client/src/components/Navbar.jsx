@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { assets } from "../assets/assets";
-import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
-
-const BookIcons = () => (
+import { Link, useLocation } from "react-router-dom";
+import { assets } from "../assets/assets.js";
+import { useClerk, UserButton } from "@clerk/clerk-react";
+import { useAppContext } from "../context/AppContext.jsx";
+import { useEffect, useState } from "react";
+const BookIcon = () => {
   <svg
     className="w-4 h-4 text-gray-700"
     aria-hidden="true"
@@ -20,10 +20,9 @@ const BookIcons = () => (
       strokeWidth="2"
       d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"
     />
-  </svg>
-);
-
-export const Navbar = () => {
+  </svg>;
+};
+const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Hotels", path: "/rooms" },
@@ -34,22 +33,35 @@ export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { openSignIn } = useClerk();
-  const { user } = useUser();
-  const navigate = useNavigate();
+
   const location = useLocation();
+  const { user, useNavigate, isOwner, setShowHotelReg } = useAppContext();
+  // useEffect(() => {
+  //     if(location.pathName !== '/'){
+  //         setIsScrolled(true);
+  //         return;
+  //     }
+  //     else{
+  //         setIsScrolled(false);
+  //     }
+  //     setIsScrolled(prev => location.pathname !== '/' ? true : prev);
 
+  //     const handleScroll = () => {
+  //         setIsScrolled(window.scrollY > 10);
+  //     };
+  //     window.addEventListener("scroll", handleScroll);
+  //     return () => window.removeEventListener("scroll", handleScroll);
   useEffect(() => {
-    if (location.pathname !== "/") {
-      setIsScrolled(true);
-      return;
-    } else {
-      setIsScrolled(false);
-    }
-    setIsScrolled((prev) => (location.pathname !== "/" ? true : prev));
-
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      if (location.pathname === "/") {
+        setIsScrolled(window.scrollY > 10); // Only scroll triggers change on front page
+      } else {
+        setIsScrolled(true); // Always scrolled on other pages
+      }
     };
+
+    handleScroll(); // Run once on mount to set initial state
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location.pathname]);
@@ -65,9 +77,9 @@ export const Navbar = () => {
       {/* Logo */}
       <Link to="/">
         <img
-          src="/1.svg"
+          src={assets.logo}
           alt="logo"
-          className={`h-6 ${isScrolled && "invert opacity-80"}`}
+          className={`h-9 ${isScrolled && "invert opacity-80"}`}
         />
       </Link>
 
@@ -89,14 +101,18 @@ export const Navbar = () => {
             />
           </a>
         ))}
-        <button
-          className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
-            isScrolled ? "text-black" : "text-white"
-          } transition-all`}
-          onClick={() => navigate("/owner")}
-        >
-          Dashboard
-        </button>
+        {user && (
+          <button
+            className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
+              isScrolled ? "text-black" : "text-white"
+            } transition-all`}
+            onClick={() =>
+              isOwner ? navigate("/owner") : setShowHotelReg(true)
+            }
+          >
+            {isOwner ? "Dashboard" : "List Ur Hotel"}
+          </button>
+        )}
       </div>
 
       {/* Desktop Right */}
@@ -108,12 +124,13 @@ export const Navbar = () => {
             isScrolled && "invert"
           } h-7 transition-all duration-500`}
         />
+
         {user ? (
           <UserButton>
             <UserButton.MenuItems>
               <UserButton.Action
                 label="My Bookings"
-                labelIcon={<BookIcons />}
+                labelIcon={<BookIcon />}
                 onClick={() => navigate("/my-bookings")}
               />
             </UserButton.MenuItems>
@@ -121,9 +138,7 @@ export const Navbar = () => {
         ) : (
           <button
             onClick={openSignIn}
-            className={`px-8 py-2.5 rounded-full ml-4 transition-all duration-500 ${
-              isScrolled ? "text-white bg-black" : "bg-white text-black"
-            }`}
+            className="bg-black text-white px-8 py-2.5 rounded-full ml-4 transition-all duration-500"
           >
             Login
           </button>
@@ -138,7 +153,7 @@ export const Navbar = () => {
             <UserButton.MenuItems>
               <UserButton.Action
                 label="My Bookings"
-                labelIcon={<BookIcons />}
+                labelIcon={<BookIcon />}
                 onClick={() => navigate("/my-bookings")}
               />
             </UserButton.MenuItems>
@@ -153,6 +168,7 @@ export const Navbar = () => {
       </div>
 
       {/* Mobile Menu */}
+
       <div
         className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col md:hidden items-center justify-center gap-6 font-medium text-gray-800 transition-all duration-500 ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
@@ -174,9 +190,11 @@ export const Navbar = () => {
         {user && (
           <button
             className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all"
-            onClick={() => navigate("/owner")}
+            onClick={() =>
+              isOwner ? navigate("/owner") : setShowHotelReg(true)
+            }
           >
-            Dashboard
+            {isOwner ? "Dashboard" : "List Ur Hotel"}
           </button>
         )}
 
@@ -192,3 +210,5 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+export default Navbar;

@@ -1,20 +1,20 @@
-import React from "react";
-import Hero from "../components/Hero";
-import FeaturedDestination from "../components/FeaturedDestination";
-import ExclusiveOffers from "../components/ExclusiveOffers";
-import Testimonial from "../components/Testimonial";
-import Newsetter from "../components/Newsetter";
+import React from 'react'
+import Hero from '../components/Hero'
+import FeatureDestination from '../components/FeatureDestination'
+import ExclusiveOffer from '../components/ExclusiveOffer'
+import Testimonial from '../components/Testimonial'
+import NewsLetter from '../components/NewsLetter'
 
 const Home = () => {
   return (
     <>
-      <Hero />
-      <FeaturedDestination />
-      <ExclusiveOffers />
-      <Testimonial />
-      <Newsetter />
+      <Hero/>
+      <FeatureDestination/>
+      <ExclusiveOffer/>
+      <Testimonial/>
+      <NewsLetter/>
     </>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
