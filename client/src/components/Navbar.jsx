@@ -35,7 +35,7 @@ const Navbar = () => {
   const { openSignIn } = useClerk();
 
   const location = useLocation();
-  const { user, useNavigate, isOwner, setShowHotelReg } = useAppContext();
+  const { user, navigate, isOwner, setShowHotelReg } = useAppContext();
   // useEffect(() => {
   //     if(location.pathName !== '/'){
   //         setIsScrolled(true);

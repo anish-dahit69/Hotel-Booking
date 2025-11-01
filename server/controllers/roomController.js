@@ -5,7 +5,7 @@ import { populate } from "dotenv";
 export const createRoom = async (req, res) => {
   try {
     const { roomType, pricePerNight, amentities } = req.body;
-    const hotel = await Hotel.findOne({ owner: req.auth.userId });
+    const hotel = await Hotel.findOne({ owner: req.auth().userId });
 
     if (!hotel) return res.json({ successs: false, message: "No Hotel found" });
 
@@ -49,7 +49,7 @@ export const getRooms = async (req, res) => {
 
 export const getOwnerRooms = async (req, res) => {
   try {
-    const hotelData = await Hotel({ owner: req.auth.userId });
+    const hotelData = await Hotel({ owner: req.auth().userId });
     const rooms = await Room.find({ hotel: hotelData._id.toString() }).populate(
       "hotel"
     );
