@@ -10,7 +10,7 @@ export const getUserData = async (req, res) => {
 
 export const storeRecentSearchedCities = async (req, res) => {
   try {
-    const { recentSearchedCities } = req.body;
+    const { recentSearchedCity } = req.body;
     const user = await req.user;
 
     if (user.recentSearchedCities.length < 3) {
