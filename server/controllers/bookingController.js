@@ -6,8 +6,8 @@ const checkAvailability = async ({ checkInDate, checkOutDate, room }) => {
   try {
     const bookings = await Booking.find({
       room,
-      checkInDate: { $lte, checkOutDate },
-      checkOutDate: { $gte, checkInDate },
+      checkInDate: { $lte: checkOutDate },
+      checkOutDate: { $gte: checkInDate },
     });
 
     const isAvailable = bookings.length === 0;
@@ -95,7 +95,7 @@ export const getHotelBookings = async (req, res) => {
     }
 
     const bookings = await Booking.find({ hotel: hotel._id })
-      .pupulate("room hotel user")
+      .populate("room hotel user")
       .sort({ createdAt: -1 });
 
     const totalBookings = bookings.length;
