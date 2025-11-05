@@ -13,7 +13,7 @@ const RoomDetails = () => {
   const [checkInDate, setCheckInDate] = useState(null);
   const [checkOutDate, setCheckOutDate] = useState(null);
   const [guests, setGuests] = useState(1);
-  const [isAvailabe, setIsAvailabe] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
 
   const checkAvailability = async () => {
     try {
@@ -27,9 +27,12 @@ const RoomDetails = () => {
         checkOutDate,
       });
       if (data.success) {
-        if (data.isAvailabe) {
-          setIsAvailabe(true);
-          toast.success("Room is available");
+        if (data.isAvailable) {
+          setIsAvailable(true);
+          toast.success("Rooms is available");
+        } else {
+          setIsAvailable(false);
+          toast.error("Room is not available");
         }
       } else {
         toast.error(data.message);
@@ -42,7 +45,7 @@ const RoomDetails = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-      if (!isAvailabe) {
+      if (!isAvailable) {
         return checkAvailability();
       } else {
         const { data } = await axios.post(
@@ -214,7 +217,7 @@ const RoomDetails = () => {
             type="submit"
             className="bg-primary hover:bg-primary-dull active:scale-95 transition-all text-white rounded-md max-md:w-full max-md:mt-6 md:px-25 py-3 md:py-4 text-base cursor-pointer"
           >
-            {isAvailabe ? "Book Now" : "Check Availability"}
+            {isAvailable ? "Book Now" : "Check Availability"}
           </button>
         </form>
 

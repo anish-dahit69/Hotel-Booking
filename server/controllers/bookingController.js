@@ -35,30 +35,46 @@ export const checkAvailabilityAPI = async (req, res) => {
 export const createBooking = async (req, res) => {
   try {
     const { room, checkInDate, checkOutDate, guests } = req.body;
-
     const user = req.user._id;
+
+    // Basic validation
+    if (!room || !checkInDate || !checkOutDate || !guests) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
+    }
+
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkOutDate);
+
+    if (isNaN(checkIn) || isNaN(checkOut) || checkIn >= checkOut) {
+      return res.status(400).json({ success: false, message: "Invalid dates" });
+    }
 
     const isAvailable = await checkAvailability({
       checkInDate,
       checkOutDate,
       room,
     });
-
     if (!isAvailable) {
-      return res.json({ success: false, message: "Room is not available" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Room is not available" });
     }
 
     const roomData = await Room.findById(room).populate("hotel");
+    if (!roomData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Room not found" });
+    }
 
-    let totalPrice = roomData.pricePerNight;
+    const nights = Math.max(
+      1,
+      Math.ceil((checkOut - checkIn) / (1000 * 3600 * 24))
+    );
+    const totalPrice = roomData.pricePerNight * nights;
 
-    const checkIn = new Date(checkInDate);
-
-    const checkOut = new Date(checkOutDate);
-    const timeDiff = checkOut.getTime() - checkIn.getTime();
-    const night = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    totalPrice *= night;
     const booking = await Booking.create({
       user,
       room,
@@ -67,10 +83,16 @@ export const createBooking = async (req, res) => {
       totalPrice,
     });
 
-    res.json({ success: true, message: "Booking created successfully" });
+    res.json({
+      success: true,
+      message: "Booking created successfully",
+      booking,
+    });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Failed to create booking" });
+    console.error(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to create booking" });
   }
 };
 
