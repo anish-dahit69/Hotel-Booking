@@ -1,0 +1,3 @@
+SMTP_USER=9af481001@smtp-brevo.com
+SENDER_EMAIL=anishdahit69@gmail.com
+SMTP_PASS=xsmtpsib-ec98511c08da49b43d380cb90310b6cf6fec9b9ff7044e373491180838e9ca0a-Q9Iqk3jvyiYT8DbW
