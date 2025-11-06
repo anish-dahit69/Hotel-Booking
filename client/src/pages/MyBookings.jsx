@@ -11,13 +11,10 @@ const MyBookings = () => {
   const fetchUserBookings = async () => {
     try {
       const token = await getToken();
-      console.log("Token:", token ? "exists" : "missing"); // Debug log
 
       const { data } = await axios.get("/api/bookings/user", {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      console.log("Response data:", data); // Debug log
 
       if (data.success) {
         setBookings(data.bookings);
