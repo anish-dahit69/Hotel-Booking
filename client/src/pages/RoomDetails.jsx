@@ -97,10 +97,7 @@ const RoomDetails = () => {
         </div>
 
         <div className="flex items-center gap-1 text-gray-500 mt-2">
-          <img
-            src={assets.locationIcon}
-            alt="location-icon"
-          />
+          <img src={assets.locationIcon} alt="location-icon" />
           <span>{room.hotel.address}</span>
         </div>
 
@@ -158,10 +155,7 @@ const RoomDetails = () => {
         >
           <div className="flex flex-col flex-wrap md:flex-row items-start md:items-center gap-4 md:gap-10 text-gray-500">
             <div className="flex flex-col">
-              <label
-                htmlFor="checkInDate"
-                className="font-medium"
-              >
+              <label htmlFor="checkInDate" className="font-medium">
                 Check-In
               </label>
               <input
@@ -176,10 +170,7 @@ const RoomDetails = () => {
             </div>
             <div className="w-px h-15 bg-gray-300/70 max-md:hidden"></div>
             <div className="flex flex-col">
-              <label
-                htmlFor="checkOutDate"
-                className="font-medium"
-              >
+              <label htmlFor="checkOutDate" className="font-medium">
                 Check-Out
               </label>
               <input
@@ -196,10 +187,7 @@ const RoomDetails = () => {
             <div className="w-px h-15 bg-gray-300/70 max-md:hidden"></div>
 
             <div className="flex flex-col">
-              <label
-                htmlFor="guests"
-                className="font-medium"
-              >
+              <label htmlFor="guests" className="font-medium">
                 Guests
               </label>
               <input
@@ -223,10 +211,7 @@ const RoomDetails = () => {
 
         <div className="mt-25 space-y-4">
           {roomCommonData.map((spec, index) => (
-            <div
-              key={index}
-              className="flex items-start gap-2"
-            >
+            <div key={index} className="flex items-start gap-2">
               <img
                 src={spec.icon}
                 alt={`${spec.title}-icon`}

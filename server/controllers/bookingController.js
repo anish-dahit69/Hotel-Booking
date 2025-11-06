@@ -37,25 +37,12 @@ export const createBooking = async (req, res) => {
     const { room, checkInDate, checkOutDate, guests } = req.body;
     const user = req.user._id;
 
-    // Basic validation
-    if (!room || !checkInDate || !checkOutDate || !guests) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing required fields" });
-    }
-
-    const checkIn = new Date(checkInDate);
-    const checkOut = new Date(checkOutDate);
-
-    if (isNaN(checkIn) || isNaN(checkOut) || checkIn >= checkOut) {
-      return res.status(400).json({ success: false, message: "Invalid dates" });
-    }
-
     const isAvailable = await checkAvailability({
       checkInDate,
       checkOutDate,
       room,
     });
+
     if (!isAvailable) {
       return res
         .status(400)
@@ -63,23 +50,24 @@ export const createBooking = async (req, res) => {
     }
 
     const roomData = await Room.findById(room).populate("hotel");
-    if (!roomData) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Room not found" });
-    }
 
-    const nights = Math.max(
-      1,
-      Math.ceil((checkOut - checkIn) / (1000 * 3600 * 24))
-    );
-    const totalPrice = roomData.pricePerNight * nights;
+    let totalPrice = roomData.pricePerNight;
+
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkOutDate);
+
+    const timeDiff = checkOut.getTime() - checkIn.getTime();
+    const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    totalPrice *= nights;
 
     const booking = await Booking.create({
       user,
       room,
       hotel: roomData.hotel._id,
       guests: +guests,
+      checkInDate,
+      checkOutDate,
       totalPrice,
     });
 
@@ -99,12 +87,23 @@ export const createBooking = async (req, res) => {
 export const getUserBookings = async (req, res) => {
   try {
     const user = req.user._id;
+
+    console.log("Fetching bookings for user:", user); // Debug log
+
     const bookings = await Booking.find({ user })
       .populate("room hotel")
       .sort({ createdAt: -1 });
+
+    console.log("Found bookings:", bookings.length); // Debug log
+
     res.json({ success: true, bookings });
   } catch (error) {
-    res.json({ success: false, message: "Failed to fetch bookings" });
+    console.error("Error fetching user bookings:", error); // Debug log
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch bookings",
+      error: error.message, // Send actual error for debugging
+    });
   }
 };
 
